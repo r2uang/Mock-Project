@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: html_head">
+</head>
+<body class="skin-black">
+<!-- header logo: style can be found in header.less -->
+<header class="header" th:replace="fragments :: html_header">
+</header>
+<div class="wrapper row-offcanvas row-offcanvas-left">
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside th:replace="fragments :: html_left-side">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Right side column. Contains the navbar and content of the page -->
+    <aside class="right-side">
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <section class="panel">
+                        <header class="panel-heading" style="text-align: right">
+                            <a th:href="@{/employee/add}" role="button" class="btn btn-primary">Add Employee</a>
+                        </header>
+                        <div class="panel-body table-responsive">
+                            <div class="box-tools m-b-15" style="display: flex;">
+                                <form th:action="@{/employee/list}" th:object="${filter}">
+                                    Page Size: <select class="input-sm" th:field="*{pageSize}">
+                                    <option class="dropdown-item" value="5">5</option>
+                                    <option class="dropdown-item" value="10">10</option>
+                                </select>
+                                    Role: <select name="role" class="input-sm" th:field="*{role}">
+                                    <option th:value="0">All</option>
+                                    <option th:each="role : ${roles}" th:value="${role.getRoleId()}"
+                                            th:text="${role.getRoleName()}"></option>
+                                </select>
+                                    Language: <select name="language_id" class="input-sm" th:field="*{language}">
+                                    <option th:value="0">All</option>
+                                    <option th:each="language : ${languages}" th:value="${language.getLanguageId()}"
+                                            th:text="${language.getLanguageName()}"></option>
+                                </select>
+                                    Status: <select class="input-sm" th:field="*{status}">
+                                        <option class="dropdown-item" value="0">All</option>
+                                        <option class="dropdown-item" value="3">Active</option>
+                                        <option class="dropdown-item" value="4">De-active</option>
+                                    </select>
+                                    Name: <input type="text" class="input-sm" th:field="*{keyword}"
+                                           name="keyword" placeholder="Enter name.."/>
+                                    <input type="submit" value="Search"/>
+                                </form>
+                            </div>
+                            <table class="table table-hover">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Date Join Company</th>
+                                    <th>Status</th>
+                                    <th>Role</th>
+                                </tr>
+                                <tr th:each="employee : ${allEmployee}">
+                                    <td th:text="${employee.getId()}"
+                                        th:onclick="|doUpdate('${employee.getId()}')|"></td>
+                                    <td th:text="${employee.getEmployeeName()}"
+                                        th:onclick="|doUpdate('${employee.getId()}')|"></td>
+                                    <td th:text="${employee.getDateJoin()}"
+                                        th:onclick="|doUpdate('${employee.getId()}')|"></td>
+                                    <td th:onclick="|doUpdate('${employee.getId()}')|"
+                                        th:text="${employee.getEmployeeStatus().getName()}"></td>
+                                    <td th:text="${employee.getRole().getRoleName()}"
+                                        th:onclick="|doUpdate('${employee.getId()}')|"></td>
+                                </tr>
+                            </table>
+                        </div><!-- /.box-body -->
+                        <!--                        <div class="text-center" th:if="${employeeList.totalPages > 1}">-->
+                        <!--                            <ul class="pagination">-->
+                        <!--                                <li th:each="i: ${#numbers.sequence(1,employeeList.totalPages)}">-->
+                        <!--                                    <a th:href="@{'/employee/page/' + ${i} + ${keyword != null ? '?keyword=' +keyword : ''}}">[[${i}]]</a>-->
+                        <!--                                </li>-->
+                        <!--                            </ul>-->
+                        <!--                        </div>-->
+                        <nav aria-label="Search results pages">
+<!--                            <div class="text-center">-->
+<!--                                Total Employees [[${totalItems}]] : Page [[${currentPage}]] of [[${totalPages}]]-->
+<!--                            </div >-->
+                            <div class="text-center">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item" th:each="i: ${#numbers.sequence(1, totalPages)}">
+                                        <a class="page-link"
+                                           th:href="@{'/employee/list?pageNumber=' + ${i} + '&pageSize=' + ${filterRequest.pageSize} + '&role=' + ${filterRequest.role} + '&language=' + ${filterRequest.language} + '&status=' + ${filterRequest.status} + '&keyword=' + ${filterRequest.keyword}}"
+                                           th:if="${i != currentPage}">[[${i}]]</a>
+                                        <span class="page-link" th:unless="${i != currentPage}">[[${i}]]</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </nav>
+                    </section><!-- /.box -->
+                </div>
+            </div>
+        </section><!-- /.content -->
+    </aside><!-- /.right-side -->
+</div><!-- ./wrapper -->
+<!-- jQuery 2.0.2 -->
+<script>
+    function doUpdate(id) {
+        location.href = "/employee/detail/" + id;
+    }
+</script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<script th:src="@{../../js/jquery.min.js}" type="text/javascript"></script>
+
+<!-- Bootstrap -->
+<script th:src="@{../../js/bootstrap.min.js}" type="text/javascript"></script>
+<!-- Director App -->
+<script th:src="@{../../js/Director/app.js}" type="text/javascript"></script>
+</body>
+</html>
